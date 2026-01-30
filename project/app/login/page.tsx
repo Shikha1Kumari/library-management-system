@@ -3,65 +3,36 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-export default function LoginPage() {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [loading, setLoading] = useState(false);
+export default function SignupPage() {
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'Admin' });
   const router = useRouter();
 
-  const handleLogin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    setLoading(true);
     try {
-      // Localhost hata kar Vercel URL dala hai
-      const response = await axios.post('https://library-management-system-kappa-ten.vercel.app/api/auth/login', formData);
-      
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        alert("🚀 Login Successful!");
-        router.push('/dashboard'); // Ya jo bhi aapka main page hai
-      }
+      // Direct Vercel link
+      await axios.post('https://library-management-system-kappa-ten.vercel.app/api/auth/signup', formData);
+      alert("🎉 Account is created! Now Login.");
+      router.push('/login');
     } catch (err) {
-      alert(`Error: ${err.response?.data?.message || "Invalid Credentials"}`);
-    } finally {
-      setLoading(false);
+      console.error(err);
+      alert("Error: Account is not created.");
     }
   };
 
   return (
-    <div style={{ padding: '50px', maxWidth: '400px', margin: 'auto', fontFamily: 'Arial' }}>
-      <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '10px', boxShadow: '0px 4px 10px rgba(0,0,0,0.1)' }}>
-        <h2 style={{ textAlign: 'center' }}>🔑 Login</h2>
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          <input 
-            type="email" 
-            placeholder="Email" 
-            onChange={(e) => setFormData({...formData, email: e.target.value})} 
-            required 
-            style={{padding: '12px', borderRadius: '5px', border: '1px solid #ccc'}} 
-          />
-          <input 
-            type="password" 
-            placeholder="Password" 
-            onChange={(e) => setFormData({...formData, password: e.target.value})} 
-            required 
-            style={{padding: '12px', borderRadius: '5px', border: '1px solid #ccc'}} 
-          />
-          <button 
-            type="submit" 
-            disabled={loading}
-            style={{ 
-              padding: '12px', 
-              backgroundColor: '#007bff', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
-      </div>
+    <div style={{ padding: '50px', maxWidth: '350px', margin: 'auto', fontFamily: 'Arial' }}>
+      <h2>📝 Create Account</h2>
+      <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <input type="text" placeholder="Name" onChange={(e) => setFormData({...formData, name: e.target.value})} required style={{padding: '10px'}} />
+        <input type="email" placeholder="Email" onChange={(e) => setFormData({...formData, email: e.target.value})} required style={{padding: '10px'}} />
+        <input type="password" placeholder="Password" onChange={(e) => setFormData({...formData, password: e.target.value})} required style={{padding: '10px'}} />
+        <select onChange={(e) => setFormData({...formData, role: e.target.value})} style={{padding: '10px'}}>
+          <option value="Admin">Admin</option>
+          <option value="User">User</option>
+        </select>
+        <button type="submit" style={{ padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', cursor: 'pointer' }}>Register</button>
+      </form>
     </div>
   );
 }
