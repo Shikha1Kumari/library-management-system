@@ -3,35 +3,28 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-export default function SignupPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'Admin' });
+export default function LoginPage() {
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const router = useRouter();
 
-  const handleSignup = async (e) => {
+  const handleLogin = async (e: any) => {
     e.preventDefault();
     try {
-      // Direct Vercel link
-      await axios.post('https://library-management-system-kappa-ten.vercel.app/api/auth/signup', formData);
-      alert("🎉 Account is created! Now Login.");
-      router.push('/login');
+      const res = await axios.post('https://library-management-system-kappa-ten.vercel.app/api/auth/login', formData);
+      alert("Login Successful!");
+      router.push('/'); 
     } catch (err) {
-      console.error(err);
-      alert("Error: Account is not created.");
+      alert("Invalid Credentials");
     }
   };
 
   return (
-    <div style={{ padding: '50px', maxWidth: '350px', margin: 'auto', fontFamily: 'Arial' }}>
-      <h2>📝 Create Account</h2>
-      <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <input type="text" placeholder="Name" onChange={(e) => setFormData({...formData, name: e.target.value})} required style={{padding: '10px'}} />
+    <div style={{ padding: '50px', maxWidth: '350px', margin: 'auto' }}>
+      <h2>🔑 Login</h2>
+      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <input type="email" placeholder="Email" onChange={(e) => setFormData({...formData, email: e.target.value})} required style={{padding: '10px'}} />
         <input type="password" placeholder="Password" onChange={(e) => setFormData({...formData, password: e.target.value})} required style={{padding: '10px'}} />
-        <select onChange={(e) => setFormData({...formData, role: e.target.value})} style={{padding: '10px'}}>
-          <option value="Admin">Admin</option>
-          <option value="User">User</option>
-        </select>
-        <button type="submit" style={{ padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', cursor: 'pointer' }}>Register</button>
+        <button type="submit" style={{ padding: '10px', backgroundColor: '#007bff', color: 'white', border: 'none' }}>Login</button>
       </form>
     </div>
   );
