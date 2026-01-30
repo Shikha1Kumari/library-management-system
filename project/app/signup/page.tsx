@@ -10,10 +10,12 @@ export default function SignupPage() {
   const handleSignup = async (e: any) => {
     e.preventDefault();
     try {
-      await axios.post('https://library-management-system-kappa-ten.vercel.app/api/auth/signup', formData);
+      // ✅ Naya Backend URL yahan update kar diya gaya hai
+      await axios.post('https://library-management-system-uh23.vercel.app/api/auth/signup', formData);
       alert("Account Created! Now Login.");
       router.push('/login');
     } catch (err) {
+      console.error(err);
       alert("Error: Account not created.");
     }
   };
