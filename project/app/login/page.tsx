@@ -4,38 +4,64 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      // Localhost hata kar Vercel URL dala hai
+      const response = await axios.post('https://library-management-system-kappa-ten.vercel.app/api/auth/login', formData);
       
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('role', res.data.role);
-
-      alert("Login Successful!");
-      
-      if (res.data.role === 'Admin') {
-        router.push('/admin');
-      } else {
-        router.push('/');
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        alert("🚀 Login Successful!");
+        router.push('/dashboard'); // Ya jo bhi aapka main page hai
       }
     } catch (err) {
-      alert("Wrong Email ya Password!");
+      alert(`Error: ${err.response?.data?.message || "Invalid Credentials"}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: '50px', maxWidth: '350px', margin: 'auto', textAlign: 'center', fontFamily: 'Arial' }}>
-      <h2>🔐 Login</h2>
-      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} required style={{padding: '10px'}} />
-        <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} required style={{padding: '10px'}} />
-        <button type="submit" style={{ padding: '10px', backgroundColor: '#0070f3', color: 'white', border: 'none', cursor: 'pointer' }}>Login</button>
-      </form>
+    <div style={{ padding: '50px', maxWidth: '400px', margin: 'auto', fontFamily: 'Arial' }}>
+      <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '10px', boxShadow: '0px 4px 10px rgba(0,0,0,0.1)' }}>
+        <h2 style={{ textAlign: 'center' }}>🔑 Login</h2>
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <input 
+            type="email" 
+            placeholder="Email" 
+            onChange={(e) => setFormData({...formData, email: e.target.value})} 
+            required 
+            style={{padding: '12px', borderRadius: '5px', border: '1px solid #ccc'}} 
+          />
+          <input 
+            type="password" 
+            placeholder="Password" 
+            onChange={(e) => setFormData({...formData, password: e.target.value})} 
+            required 
+            style={{padding: '12px', borderRadius: '5px', border: '1px solid #ccc'}} 
+          />
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={{ 
+              padding: '12px', 
+              backgroundColor: '#007bff', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
